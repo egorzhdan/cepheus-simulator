@@ -1,0 +1,36 @@
+package build
+
+import build.python.Python
+import java.io.BufferedReader
+import java.io.File
+import kotlin.coroutines.experimental.buildSequence
+
+/**
+ * @author Egor Zhdan
+ */
+interface BuildSystem {
+    val name: String
+
+    suspend fun compile(sourceFile: File)
+
+    suspend fun run(sourceFile: File, session: Session)
+
+    suspend fun abort()
+
+    companion object {
+        val all: MutableList<BuildSystem> = arrayListOf(Python)
+    }
+}
+
+fun BuildSystem.register() {
+    BuildSystem.all.add(this)
+}
+
+fun BufferedReader.sequenceOfLines(completion: () -> Unit) = buildSequence<String> {
+    use {
+        while (true) {
+            yield(it.readLine() ?: break)
+        }
+        completion()
+    }
+}
