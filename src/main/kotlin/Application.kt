@@ -47,7 +47,7 @@ fun Application.module() {
             call.respondText(Frontend.makeSimulatorHTML(), ContentType.Text.Html)
         }
         webSocket("/simulator/ws") {
-            send(Frame.Text("Server ready"))
+            println("Server ready to WS")
 
             val maybeFieldData = incoming.receive()
             if (maybeFieldData !is Frame.Text) {
