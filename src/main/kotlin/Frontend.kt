@@ -38,7 +38,7 @@ object Frontend {
                 //language=CSS
                 +" .card-row { margin-bottom: 1rem; margin-top: 2rem; }"
                 //language=CSS
-                +" .desc-span { display: inline-block; text-align: center; width: 60%; margin: 0 !important; }"
+                +" .desc-span { font-size: 0.7rem; display: inline-block; text-align: center; width: 60%; margin: 0 !important; }"
 
                 //language=CSS
                 +" .btn-up { padding: 0; height: 0.6rem; width: 100%; border-radius: 0.5rem 0.5rem 0 0; }"
@@ -99,7 +99,7 @@ object Frontend {
                                             span("desc-span") {
                                                 attributes["id"] = "desc-$row-$col"
 
-                                                +"R"
+                                                +"↓"
                                             }
                                             button(classes = "btn btn-secondary btn-right float-right") {
                                                 attributes["onclick"] = "toggleCell($row, $col, 'right', this)"

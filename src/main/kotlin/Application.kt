@@ -80,8 +80,18 @@ fun Application.module() {
 
             var finished = false
             val session = Session(field, object : Reporter {
+                var previousPosition: Position? = null
+
                 override suspend fun moved(move: Move, currentPosition: Position) {
-                    send(Frame.Text("/robot move $move to {${currentPosition.row}, ${currentPosition.col}}"))
+                    if (previousPosition?.direction != currentPosition.direction) {
+                        if (currentPosition.direction.rotate(Move.TURN_LEFT) == previousPosition?.direction)
+                            send(Frame.Text("/robot turn right"))
+                        if (currentPosition.direction.rotate(Move.TURN_RIGHT) == previousPosition?.direction)
+                            send(Frame.Text("/robot turn left"))
+                    } else {
+                        send(Frame.Text("/robot move $move to {${currentPosition.row}, ${currentPosition.col}}"))
+                    }
+                    previousPosition = currentPosition
                 }
 
                 override suspend fun badMoveAttempted(move: Move, fromPosition: Position) {
@@ -123,7 +133,7 @@ fun Application.module() {
 fun main(args: Array<String>) {
     val envPort = System.getenv("PORT")
     embeddedServer(Netty,
-            port = if (envPort != null) envPort.toInt() else 5000,
+            port = envPort?.toInt() ?: 5000,
             watchPaths = listOf("ApplicationKt"),
             module = Application::module
     ).start()

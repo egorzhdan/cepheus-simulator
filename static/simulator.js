@@ -151,23 +151,26 @@ function readFile(event) {
 
 var robotRow = 0;
 var robotCol = 0;
+var robotChar = '↓';
 
 function resetField() {
     var spans = $('.desc-span').parent();
     spans.removeClass('table-secondary');
     spans.removeClass('table-danger');
 
-    putRobot(0, 0);
+    putRobot(0, 0, '↓');
 }
 
-function putRobot(row, col) {
+function putRobot(row, col, char) {
     robotRow = row;
     robotCol = col;
+    robotChar = char;
 
     $('.desc-span').css('opacity', 0);
 
     var span = $('#desc-' + row + '-' + col);
     span.css('opacity', 1);
+    span.html(char);
     span.parent().addClass('table-secondary');
 }
 
@@ -175,6 +178,17 @@ function hitWall() {
     var span = $('#desc-' + robotRow + '-' + robotCol);
     span.parent().removeClass('table-secondary');
     span.parent().addClass('table-danger');
+}
+
+function left(char) {
+    if (char === '↓') return '→';
+    if (char === '→') return '↑';
+    if (char === '↑') return '←';
+    if (char === '←') return '↓';
+}
+
+function right(char) {
+    return left(left(left(char)));
 }
 
 function run() {
@@ -240,17 +254,17 @@ function run() {
             log('> ' + message.split('/debug').join(''), 'info');
         }
         else if (message.startsWith('/robot')) {
-            if (message.startsWith('/robot turn left')) {
-
+            if (message.startsWith('/robot turn right')) {
+                putRobot(row, col, right(robotChar));
             }
             else if (message.startsWith('/robot turn left')) {
-
+                putRobot(row, col, left(robotChar));
             }
             else {
                 var coordinates = message.split('{')[1].split('}')[0].split(', ');
                 var row = parseInt(coordinates[0]);
                 var col = parseInt(coordinates[1]);
-                putRobot(row, col);
+                putRobot(row, col, robotChar);
             }
         }
         else if (message.startsWith('/fail')) {
