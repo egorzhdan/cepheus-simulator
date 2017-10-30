@@ -118,7 +118,11 @@ object Frontend {
                     row("card-row") {
                         col(5) {
                             card(title = "Templates", text = "Download pre-configured templates",
-                                    links = arrayOf("/static/simulator-template.py" to "Python"))
+                                    links = arrayOf(
+                                            "/static/simulator-template.py" to "Python",
+                                            "/static/simulator-header.h" to "C header",
+                                            "/static/simulator-sample.c" to "C sample"
+                                    ))
                         }
                         col(7) {
                             card(title = "Custom", links = emptyArray()) {

@@ -226,7 +226,11 @@ function run() {
     socket.onopen = function () {
         log('Uploading...', 'muted');
         dumpField();
+        var buildSystemId = $('#compiler').find('option:selected').html();
+        console.log(buildSystemId);
+
         socket.send(fieldDump);
+        socket.send(buildSystemId);
         socket.send(fileContents);
         log('Uploaded', 'muted');
     };
@@ -242,6 +246,7 @@ function run() {
 
     socket.onmessage = function (event) {
         var message = event.data.toString();
+        console.log(message);
 
         if (message === '/finish') {
             log('Finished', 'success');

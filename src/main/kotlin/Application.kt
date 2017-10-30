@@ -1,9 +1,11 @@
 /**
  * @author Egor Zhdan
  */
+import build.BuildSystem
 import build.Reporter
 import build.Session
-import build.python.Python
+import build.buildSystem.Python
+import maze.CompilationErrorException
 import maze.Field
 import maze.Move
 import maze.Position
@@ -59,6 +61,13 @@ fun Application.module() {
             val field = Field.parse(fieldData)
             send(Frame.Text("Field compiled"))
 
+            val maybeBuildSystemID = incoming.receive()
+            if (maybeBuildSystemID !is Frame.Text) {
+                close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "Invalid build system"))
+                return@webSocket
+            }
+            val buildSystemID = maybeBuildSystemID.readText()
+
             val maybeCode = incoming.receive()
             if (maybeCode !is Frame.Text) {
                 close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "Invalid code received"))
@@ -66,7 +75,11 @@ fun Application.module() {
             }
             val code = maybeCode.readText()
 
-            val buildSystem = Python
+            val buildSystem = BuildSystem.all.firstOrNull { it.name == buildSystemID }
+            if (buildSystem == null) {
+                close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "Unknown build system ID: $buildSystemID"))
+                return@webSocket
+            }
             val codeID = Random().nextInt()
             val file = File(System.getProperty("user.dir") + "/tmp/simulator_code$codeID.txt")
 
@@ -74,20 +87,16 @@ fun Application.module() {
             writer.write(code)
             writer.close()
 
-            buildSystem.compile(file)
-
-            send(Frame.Text("Code compiled"))
-
             var finished = false
             val session = Session(field, object : Reporter {
-                var previousPosition: Position? = null
+                var previousPosition = field.start
 
                 override suspend fun moved(move: Move, currentPosition: Position) {
-                    if (previousPosition?.direction != currentPosition.direction) {
-                        if (currentPosition.direction.rotate(Move.TURN_LEFT) == previousPosition?.direction)
-                            send(Frame.Text("/robot turn right"))
-                        if (currentPosition.direction.rotate(Move.TURN_RIGHT) == previousPosition?.direction)
+                    if (previousPosition.col == currentPosition.col && previousPosition.row == currentPosition.row) {
+                        if (previousPosition.direction.rotate(Move.TURN_LEFT) == currentPosition.direction)
                             send(Frame.Text("/robot turn left"))
+                        if (previousPosition.direction.rotate(Move.TURN_RIGHT) == currentPosition.direction)
+                            send(Frame.Text("/robot turn right"))
                     } else {
                         send(Frame.Text("/robot move $move to {${currentPosition.row}, ${currentPosition.col}}"))
                     }
@@ -112,10 +121,20 @@ fun Application.module() {
                     send(Frame.Text("/finish"))
 
                     finished = true
-                    file.delete()
+                    buildSystem.cleanUp(file)
                     close(CloseReason(CloseReason.Codes.NORMAL, "Finished"))
                 }
             })
+
+            try {
+                buildSystem.compile(file)
+            } catch (e: CompilationErrorException) {
+                send(Frame.Text("/error Compilation error: ${e.message}"))
+                session.finish()
+            }
+
+            send(Frame.Text("Code compiled"))
+
             send(Frame.Text("Running code..."))
             buildSystem.run(file, session)
 
