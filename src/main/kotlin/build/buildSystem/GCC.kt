@@ -20,9 +20,11 @@ object GCC : BuildSystem {
     override suspend fun compile(sourceFile: File) {
         check(sourceFile.canRead())
 
+        val gccName = System.getenv("GCC_NAME") ?: "gcc-5"
+
         val cFile = cFile(sourceFile)
         sourceFile.copyTo(cFile)
-        val compileProcess = Runtime.getRuntime().exec("gcc-5 -o ${runFile(sourceFile).absolutePath} ${headerFile().absolutePath} ${cFile.absolutePath} -std=c11 -I${headerFile().parent} -w")
+        val compileProcess = Runtime.getRuntime().exec("$gccName -o ${runFile(sourceFile).absolutePath} ${headerFile().absolutePath} ${cFile.absolutePath} -std=c11 -I${headerFile().parent} -w")
 
         val errors = compileProcess.errorStream.bufferedReader().readLines()
         if (errors.isNotEmpty()) {
