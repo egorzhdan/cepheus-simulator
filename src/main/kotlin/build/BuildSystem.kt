@@ -1,6 +1,7 @@
 package build
 
-import build.python.Python
+import build.buildSystem.GCC
+import build.buildSystem.Python
 import java.io.BufferedReader
 import java.io.File
 import kotlin.coroutines.experimental.buildSequence
@@ -17,8 +18,10 @@ interface BuildSystem {
 
     suspend fun abort()
 
+    suspend fun cleanUp(sourceFile: File)
+
     companion object {
-        val all: MutableList<BuildSystem> = arrayListOf(Python)
+        val all: MutableList<BuildSystem> = arrayListOf(GCC, Python)
     }
 }
 

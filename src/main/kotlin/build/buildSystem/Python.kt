@@ -1,10 +1,9 @@
-package build.python
+package build.buildSystem
 
 import build.BuildSystem
 import build.Session
 import build.sequenceOfLines
 import java.io.File
-import java.io.IOException
 
 /**
  * @author Egor Zhdan
@@ -46,5 +45,9 @@ object Python : BuildSystem {
 
     override suspend fun abort() {
         process?.destroyForcibly()
+    }
+
+    override suspend fun cleanUp(sourceFile: File) {
+        sourceFile.delete()
     }
 }
