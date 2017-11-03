@@ -170,7 +170,7 @@ function putRobot(row, col, char) {
 
     var span = $('#desc-' + row + '-' + col);
     span.css('opacity', 1);
-    span.html(char);
+    span.text(char);
     span.parent().addClass('table-secondary');
 }
 
@@ -260,10 +260,10 @@ function run() {
         }
         else if (message.startsWith('/robot')) {
             if (message.startsWith('/robot turn right')) {
-                putRobot(row, col, right(robotChar));
+                putRobot(robotRow, robotCol, right(robotChar));
             }
             else if (message.startsWith('/robot turn left')) {
-                putRobot(row, col, left(robotChar));
+                putRobot(robotRow, robotCol, left(robotChar));
             }
             else {
                 var coordinates = message.split('{')[1].split('}')[0].split(', ');
