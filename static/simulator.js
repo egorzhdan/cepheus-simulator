@@ -217,7 +217,7 @@ function run() {
     resetField();
 
     log('Connecting...', 'muted');
-    socket = new WebSocket("ws://" + window.location.host + "/simulator/ws");
+    socket = new WebSocket("ws://" + window.location.host + "/ws");
 
     socket.onerror = function () {
         log('Socket error', 'danger');

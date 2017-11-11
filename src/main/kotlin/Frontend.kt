@@ -8,21 +8,6 @@ import org.jetbrains.ktor.util.unescapeIfQuoted
  */
 object Frontend {
 
-    fun makeIndexHTML() = createHTML().html {
-        makeHead { }
-
-        makeBody {
-            br()
-            p("lead") {
-                +"This is just a template, go on"
-                br()
-                a("/simulator") {
-                    +"Brand-new revolutionary simulator"
-                }
-            }
-        }
-    }
-
     fun makeSimulatorHTML() = createHTML().html {
         makeHead {
             style {
