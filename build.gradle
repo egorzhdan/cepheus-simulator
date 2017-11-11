@@ -57,7 +57,7 @@ build.mustRunAfter clean
 jar {
     manifest {
         attributes  'Main-Class': 'org.jetbrains.ktor.netty.DevelopmentHost',
-                'Implementation-Title': 'My Project',
+                'Implementation-Title': 'Cepheus',
                 'Implementation-Version': '0.1'
     }
     from {

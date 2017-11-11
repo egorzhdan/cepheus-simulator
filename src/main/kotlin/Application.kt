@@ -1,14 +1,6 @@
 /**
  * @author Egor Zhdan
  */
-import build.BuildSystem
-import build.Reporter
-import build.Session
-import build.buildSystem.Python
-import maze.CompilationErrorException
-import maze.Field
-import maze.Move
-import maze.Position
 import org.jetbrains.ktor.application.Application
 import org.jetbrains.ktor.application.install
 import org.jetbrains.ktor.content.files
@@ -27,6 +19,13 @@ import java.io.File
 import java.io.PrintWriter
 import java.time.Duration
 import java.util.*
+import build.BuildSystem
+import build.Reporter
+import build.Session
+import maze.CompilationErrorException
+import maze.Field
+import maze.Move
+import maze.Position
 
 fun Application.module() {
     install(DefaultHeaders)
@@ -42,14 +41,11 @@ fun Application.module() {
         }
 
         get("/") {
-            call.respondText(Frontend.makeIndexHTML(), ContentType.Text.Html)
-        }
-
-        get("/simulator") {
             call.respondText(Frontend.makeSimulatorHTML(), ContentType.Text.Html)
         }
-        webSocket("/simulator/ws") {
-            println("Server ready to WS")
+
+        webSocket("/ws") {
+            println("Server ready for WS")
 
             val maybeFieldData = incoming.receive()
             if (maybeFieldData !is Frame.Text) {
@@ -137,12 +133,6 @@ fun Application.module() {
 
             send(Frame.Text("Running code..."))
             buildSystem.run(file, session)
-
-//            incoming.consumeEach { frame ->
-//                if (frame is Frame.Text) {
-//                    println(frame.readText())
-//                }
-//            }
 
             if (!finished) session.finish()
         }

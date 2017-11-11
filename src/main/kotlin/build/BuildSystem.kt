@@ -21,7 +21,7 @@ interface BuildSystem {
     suspend fun cleanUp(sourceFile: File)
 
     companion object {
-        val all: MutableList<BuildSystem> = arrayListOf(GCC, Python)
+        val all: MutableList<BuildSystem> = arrayListOf(Python, GCC)
     }
 }
 
@@ -29,11 +29,10 @@ fun BuildSystem.register() {
     BuildSystem.all.add(this)
 }
 
-fun BufferedReader.sequenceOfLines(completion: () -> Unit) = buildSequence<String> {
+fun BufferedReader.sequenceOfLines() = buildSequence<String> {
     use {
         while (true) {
             yield(it.readLine() ?: break)
         }
-        completion()
     }
 }

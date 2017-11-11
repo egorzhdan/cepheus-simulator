@@ -38,9 +38,7 @@ object GCC : BuildSystem {
         val reader = process!!.inputStream.bufferedReader()
         val writer = process!!.outputStream.bufferedWriter()
 
-        reader.sequenceOfLines({
-            writer.close()
-        }).forEach {
+        reader.sequenceOfLines().forEach {
             println("printed $it")
             val response = session.handleOutput(it)
 
