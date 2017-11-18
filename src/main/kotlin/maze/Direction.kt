@@ -15,8 +15,8 @@ enum class Direction {
 
         LEFT -> when (move) {
             Move.FORWARD -> LEFT
-            Move.TURN_LEFT -> TOP
-            Move.TURN_RIGHT -> BOTTOM
+            Move.TURN_LEFT -> BOTTOM
+            Move.TURN_RIGHT -> TOP
         }
 
         BOTTOM -> when (move) {
